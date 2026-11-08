@@ -1,0 +1,26 @@
+# Reset Rescue — requires_hermes floor probe
+# generated 2026-11-07T21:25:16Z by scripts/floor_probe.sh
+# repo: <HERMES_SRC> at 0ea6ea941a
+#
+credentialed_provider_request v0.21.7      4070f011a2bf  2026-10-10  credentialed_provider_request
+statusbar_areas              v0.21.6      ea0e4299ec5b  2026-10-05  STATUSBAR_AREAS
+desktop_i18n                 v0.21.6      bba18c6008c3  2026-07-19  usePluginI18n
+plugin_data_dir              v0.21.6      8f2ddc9676ff  2026-08-17  plugin_data_dir
+plugin_db                    v0.21.6      8f2ddc9676ff  2026-08-17  def plugin_db
+register_cli_command         v0.21.6      dd8a42bf7d46  2026-04-05  register_cli_command
+desktop_config_schema        v0.21.6      bd6dcd4bd5f0  2026-08-12  config_schema
+cron_no_agent                v0.21.6      3db6b9cc871c  2026-05-04  no_agent
+cron_failure_deliver         v0.21.6      c9491e6a7d9c  2026-09-02  failure_deliver
+cron_script_dir_guard        v0.21.6      5a8fbbf16ce7  2026-09-02  scripts_dir
+hermes_send                  v0.21.6      29b1bd0e20e5  2026-05-16  hermes send
+cron_list_created_job        v0.21.6      c3ea62079679  2026-03-14  Created job:
+desktop_half_copy            v0.22.6      f9e923f190b1  2026-10-27  desktop-plugins
+read_credential_pool         v0.21.6      8d59881a6246  2026-03-31  read_credential_pool
+auth_refresh_matching        v0.21.6      34837597d298  2026-07-17  try_refresh_matching
+plugin_settings_save         v0.21.6      5c0e73eff1d9  2026-09-22  save_plugin_settings
+plugin_config_dict_type      v0.21.6      5c0e73eff1d9  2026-09-22  "dict": "json"
+plugin_dashboard_mount       v0.21.6      2497ec5126fa  2026-09-02  _mount_plugin_api_routes
+plugin_api_allowlist         (no stable tag yet) 0502fe0597ab  2026-11-05  plugin_api.json
+
+candidate floor: >=0.22.6  (newest surface: desktop_half_copy, f9e923f190b13898736dfe747ec8ae5af12d8563 2026-10-27)
+RESULT: OK

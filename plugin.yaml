@@ -1,0 +1,122 @@
+manifest_version: 2
+name: reset-rescue
+version: "0.1.0"
+description: >-
+  Rescues expiring OpenAI Codex rate-limit reset credits: scans every Codex
+  account in your Hermes credential pool, redeems each banked credit minutes
+  before it expires (with a backup attempt), confirms by readback and
+  notifies you. Desktop status-bar popup. See README "What this plugin does
+  on your machine" for the full disclosure.
+author: Bruno Oliveira (bwoliveira)
+license: MIT
+homepage: https://github.com/bwoliveira/hermes-reset-rescue
+tags: [codex, openai, rate-limits, automation, desktop]
+kind: standalone
+platforms: [linux, macos]
+requires_hermes: ">=0.22.6"
+requires_auth: [openai-codex]
+provides_tools: []
+provides_hooks: []
+requires_env: []
+python_dependencies: []
+capabilities: []
+# Settings keys; decisions are recorded in docs/plan/decisions.md (D-013, D-016).
+# `backup_lead_minutes`, `account_source`, `automatic_rescue` and
+# `included_accounts` were cut: the first is now an internal formula, the other
+# three are automatic.
+config_schema:
+  scan_interval_hours:
+    type: int
+    label: Scan interval (hours)
+    description: >-
+      How often Hermes checks each account in the pool for reset credits, in
+      hours. Default 12; allowed 1-24.
+    default: 12
+  lead_minutes:
+    type: int
+    label: Rescue time (minutes before expiry)
+    description: >-
+      The first redemption runs this many minutes before expiry, with a backup a
+      few minutes later. Default 10; allowed 5-240.
+    default: 10
+  reminder_1_hours:
+    type: int
+    label: First reminder (hours before expiry)
+    description: >-
+      Sends the first reminder this many hours before expiry. Default 24; allowed
+      0-168; 0 turns it off.
+    default: 24
+  reminder_2_hours:
+    type: int
+    label: Second reminder (hours before expiry)
+    description: >-
+      Sends the second reminder this many hours before expiry. Default 1; allowed
+      0-72; 0 turns it off.
+    default: 1
+  notify_target:
+    type: str
+    label: Notice destination
+    description: >-
+      Sends notices to the specified platform, platform:chat or
+      platform:chat:thread. Default is empty, which uses Hermes' configured home
+      channel.
+    default: ""
+  early_redeem_enabled:
+    type: bool
+    label: Redeem early when quota is nearly exhausted
+    description: >-
+      When on, redeems the soonest-expiring available credit of an account
+      once its weekly quota remaining is at or below the threshold. Default
+      off.
+    default: false
+  auto_redeem_enabled:
+    type: bool
+    label: Redeem automatically before expiry
+    description: >-
+      Redeems credits automatically before expiry by default. When off, no
+      automatic redemption is scheduled; reminders and Redeem now still work.
+    default: true
+  early_redeem_remaining_pct:
+    type: int
+    label: Early redemption threshold (percent remaining)
+    description: >-
+      Sets the weekly quota percentage at or below which early redemption can
+      occur. Default 0 means only when nothing is left; allowed 0-100.
+    default: 0
+  excluded_accounts:
+    type: list
+    label: Excluded accounts
+    description: >-
+      Accounts to skip, as a list of account keys or masked labels.
+      Default is empty, which covers every account in the pool.
+    default: []
+  mask_labels:
+    type: bool
+    label: Mask account labels
+    description: >-
+      Masks email names and domains in the popup and notices, for example example@example.com ->
+      e***@e***.com. On by default; turn off to show full labels there, while
+      files and logs stay masked.
+    default: true
+  language:
+    type: str
+    label: Language
+    description: >-
+      Language of the popup and notices: auto, en or pt-BR. Default auto,
+      which follows Hermes.
+    default: auto
+    choices: [auto, en, pt-BR]
+  account_overrides:
+    type: dict
+    label: "Per-account settings"
+    description: >-
+      Per-account changes to the global settings, keyed by account key. Written
+      from the Per account view; leave it empty to follow the global settings.
+    default: {}
+  dry_run:
+    type: bool
+    label: Dry run
+    description: >-
+      Scans and schedules as normal but never redeems; notices say what
+      would happen. Default off.
+    default: false

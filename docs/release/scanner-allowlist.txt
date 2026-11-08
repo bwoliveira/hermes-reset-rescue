@@ -1,0 +1,16 @@
+# Reset Rescue — explained scanner findings (S11, catalog rule 7)
+#
+# One row per finding the install-time scanner raises outside docs/:
+#   <pattern_id>|<file>|<why it is not a threat>
+#
+# `scripts/scan_repo.py --strict` prints every finding as `explained` (listed
+# here), `documentation` (under docs/, prose only) or `UNEXPLAINED` (fails the
+# run). A row that stops matching a real finding also fails: stale evidence
+# would let a new finding hide behind an old excuse. Adding a row is a review
+# decision — the reason must be true of the code, not a wish.
+#
+# Every row below is also explained in prose in docs/release/scanner.md.
+
+python_subprocess|tests/|Process-boundary tests use scoped offline-guard allow_subprocess declarations; opt-in native ticker/preparation fixtures run the real CLI only after temporary-home resolution checks and read-only real-home/install mount verification. The loopback-only ticker never dispatches a live provider or chat send.
+python_subprocess|reset_rescue/cli_runner.py|The plugin's single process boundary: it runs the profile's own `hermes` launcher (cron, send, plugins) through an argv list with shell=False and stdin=DEVNULL. Driving Hermes' published CLI is the design (A§4.2): the plugin never edits the cron store, never opens a socket and never holds a token.
+python_subprocess|reset_rescue/wrappers.py|The generated cron wrapper source is a string in this file, not a call site: it is written to <HERMES_HOME>/scripts and executed later by Hermes' scheduler, which is the only way a native one-shot job can run. The wrapper is stdlib-only, resolves HERMES_HOME from its own path and passes stdin=DEVNULL.

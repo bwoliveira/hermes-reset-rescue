@@ -1,0 +1,14 @@
+{
+  "name": "reset-rescue-desktop-tests",
+  "private": true,
+  "description": "Dev-only harness deps for tests/desktop. Not loaded by Hermes. Without an install the harness uses the installed Hermes Desktop's node_modules or RR_NODE_MODULES.",
+  "type": "module",
+  "devDependencies": {
+    "@nanostores/react": "1.1.0",
+    "esbuild": "0.28.2",
+    "jsdom": "29.1.1",
+    "nanostores": "1.4.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  }
+}

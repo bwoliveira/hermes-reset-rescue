@@ -1,0 +1,68 @@
+# Tool configuration only — Reset Rescue is a native Hermes plugin, not a
+# Python package. There is deliberately **no** `[project]` table here: Hermes'
+# own plugin loader (`pm/plugin_declarations.py:read_python_declaration`) treats
+# a pyproject with `[project]` as owning packaging and would make this plugin a
+# uv workspace member with declared dependencies. A tooling-only pyproject keeps
+# it a legacy manifest plugin whose dependency surface is `plugin.yaml`'s
+# `python_dependencies` (empty), which is what `hermes plugins validate` checks.
+#
+# The tools themselves are not installed into Hermes' own interpreter. They live
+# in an isolated PM environment:
+#
+#   hermes pm environment rr-l5-dev \
+#       --requirement "ruff>=0.6,<0.15" --requirement "mypy>=1.11,<2"
+#
+# `scripts/check.sh` resolves that interpreter through `hermes pm environment`
+# and falls back to `ruff`/`mypy` on PATH. Never `pip install` into the Hermes
+# install or the system Python.
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# Vendored or generated trees would go here; there are none.
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+# PEP 8 (E, W) plus the correctness rules worth failing a build over:
+#   F — pyflakes (unused imports/names, undefined names)
+#   I — import order (deterministic diffs)
+#   B — bugbear (mutable defaults, blind excepts, loop-variable closures)
+# pyupgrade (UP) is deliberately not selected: it rewrites `Optional[X]` to
+# `X | None` across ~134 sites in modules this lane does not own, which is
+# churn without a correctness gain.
+select = ["E", "W", "F", "I", "B"]
+ignore = [
+    # E501 is reported, not ignored: line length is part of the bar. Listed here
+    # only so the intent is explicit if the rule ever needs an exception.
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Test fixtures and the shell-out probes print and build strings on purpose.
+"tests/desktop/*.mjs" = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.mypy]
+python_version = "3.11"
+files = ["reset_rescue"]
+# Strict-ish: every function body is checked, but the codebase is shared with
+# four other lanes, so a full `strict = true` (which would demand annotations on
+# every def) is not imposed retroactively. These are the flags that catch real
+# bugs without a rewrite.
+check_untyped_defs = true
+disallow_untyped_calls = false
+disallow_untyped_defs = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+strict_equality = true
+# Hermes' own modules (`agent`, `hermes_cli`, `plugins`, `pm`) ship no type
+# information and are not a dependency of this repo; importing them must not be
+# an error.
+ignore_missing_imports = true
+follow_imports = "silent"
+exclude = ["^docs/", "^tests/", "^scripts/"]

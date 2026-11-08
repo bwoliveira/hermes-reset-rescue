@@ -1,0 +1,42 @@
+# Reset Rescue — catalog entry draft (T-45)
+#
+# DRAFT. Do not submit until the repository is public, installation and loading
+# pass on the minimum supported Hermes version, and sha pins the reviewed commit.
+#
+# Copy this file to `plugin-catalog/reset-rescue.yaml` in NousResearch/hermes-agent
+# as the whole content of the catalog PR (rule 1: one entry, maintainer-merged).
+#
+# Schema: hermes_cli/plugin_catalog.py PluginCatalogEntry. Required: name,
+# repo, sha (full 40-hex), description, maintainer. `tier` and `category` must
+# be in CATALOG_TIERS / CATALOG_CATEGORIES or the entry is dropped with a
+# warning. `version` is a cosmetic label for the pinned sha.
+#
+# Rules this entry must satisfy (catalog rules 2, 6, 13, 14 and 16):
+#   2  exact 40-char SHA, no branch or tag
+#   6  declared capabilities match the pinned code (this plugin registers no
+#      tools, hooks or middleware and needs no env var)
+#   13 risky behaviour disclosed in the description (condensed from the README)
+#   14 requires_hermes mirrors plugin.yaml and is a real floor (>=0.22.6, T-02)
+#   16 one listing per lineage: original code, prior art named in the README
+
+name: reset-rescue
+repo: https://github.com/bwoliveira/hermes-reset-rescue
+# PLACEHOLDER — replace with the full 40-hex commit of the reviewed public tree.
+sha: "0000000000000000000000000000000000000000"
+version: "0.1.0"
+title: Reset Rescue
+description: >-
+  Rescues expiring OpenAI Codex rate-limit reset credits across the openai-codex accounts in the active Hermes profile's credential pool, falling back to the active sign-in when the pool has no usable accounts. By default, Hermes cron schedules a primary attempt 10 minutes before expiry and a backup 4 minutes before, then reads the credit list back. Reminders and results use your existing Hermes channel. Optional quota-based early redemption is off by default; confirmed Redeem now spends a credit manually. By design it does not purchase credits or enable overage. The Desktop popup lists every account, with history, settings that save on change, English and pt-BR, and per-account overrides with two or more accounts. Account labels and domains are masked by default; tokens and raw credit IDs are not logged.
+  Credential and network disclosure: Hermes read_credential_pool supplies each openai-codex account's access token. The plugin holds it in memory for that account's requests only, and does not store or log it. The plugin does not parse or write auth.json, other profiles or another tool's credentials. If the profile has no pool, Hermes' helper reads the global-root pool read-only. Requests send Codex CLI client headers (User-Agent codex-cli, ChatGPT-Account-ID) to chatgpt.com for the credit list, usage and credit consume calls. The consume POST uses a private, undocumented endpoint that may change. On HTTP 401 the plugin runs hermes auth refresh; Hermes performs the refresh and may rotate and save credentials in the pool. The active sign-in fallback uses credentialed_provider_request. The plugin creates and removes its own Hermes cron jobs and launcher scripts and runs hermes send. Local state holds salted keys, masked labels, results and request IDs, and no credentials. Pool-token use is a disclosed deviation from catalog rule 11, not full compliance; see the PR body for the exception request.
+maintainer: bwoliveira
+tier: community
+category: automation
+docs_url: https://github.com/bwoliveira/hermes-reset-rescue#readme
+readme: true
+platforms: [linux, macos]
+requires_hermes: ">=0.22.6"
+capabilities:
+  provides_tools: []
+  provides_hooks: []
+  provides_middleware: []
+  requires_env: []

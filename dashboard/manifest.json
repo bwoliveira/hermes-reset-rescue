@@ -1,0 +1,7 @@
+{
+  "name": "reset-rescue",
+  "label": "Reset Rescue",
+  "description": "Backend routes for the Reset Rescue Desktop popup (no dashboard tab).",
+  "api": "plugin_api.py",
+  "tab": { "hidden": true }
+}

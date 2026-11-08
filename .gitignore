@@ -1,0 +1,32 @@
+# Secrets and local state
+.env
+.env.*
+*.pem
+*.key
+auth.json
+*-state.json
+*.lock
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+# Node
+node_modules
+npm-debug.log*
+# Test homes, scratch and captures
+.test-home*/
+scratch/
+tmp/
+*.log
+screenshots/local/
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

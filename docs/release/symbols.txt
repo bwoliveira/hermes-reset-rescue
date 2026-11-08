@@ -1,0 +1,36 @@
+# Reset Rescue — Hermes surfaces that drive the `requires_hermes` floor (T-02)
+#
+# One entry per line: <id>|<symbol>|<path>|<why the plugin needs it>|<floor>
+# `symbol` is passed to `git log -S` (pickaxe: the commit that changed the
+# number of occurrences). `path` is required and must narrow the search to the
+# files that carry the surface: a whole-tree pickaxe walks every blob in the
+# history and takes minutes.
+#
+# `floor` is `yes` (default when omitted) or `no`. A `no` row is still probed
+# and printed, but it cannot raise the floor: use it for a surface the plugin
+# only mentions in documentation or that a validator reads, never the runtime.
+#
+# Order is irrelevant: the probe sorts by the earliest stable tag that contains
+# the introducing commit and reports the newest one as the candidate floor.
+# Keep this list honest — every line must correspond to a surface the shipped
+# code actually uses, or the floor is higher than the truth (catalog rule 14).
+
+credentialed_provider_request|credentialed_provider_request|hermes_cli/plugin_provider_requests.py|ActiveSignInSource fallback (A§4.3) and `requires_auth: [openai-codex]`
+statusbar_areas|STATUSBAR_AREAS|apps/desktop/src/sdk/areas.ts|Desktop status-bar indicator (A§10)
+desktop_i18n|usePluginI18n|apps/desktop/src/sdk|`ctx.i18n` / `usePluginI18n` string bundles (A§10)
+plugin_data_dir|plugin_data_dir|plugins/plugin_storage.py|`plugin_data_dir()` state root (A§6)
+plugin_db|def plugin_db|plugins/plugin_storage.py|SQLite state (A§6)
+register_cli_command|register_cli_command|hermes_cli/plugins.py|`hermes reset-rescue` command tree (A§4.9)
+desktop_config_schema|config_schema|hermes_cli/plugin_dev.py|Desktop plugin settings form (A§3)
+cron_no_agent|no_agent|cron/jobs.py|cron `--no-agent --script` jobs (A§7.1)
+cron_failure_deliver|failure_deliver|cron/jobs.py|cron `--failure-deliver` (A§7.3)
+cron_script_dir_guard|scripts_dir|cron/scheduler_script.py|script must resolve inside `<HERMES_HOME>/scripts/` (A§7.1)
+hermes_send|hermes send|hermes_cli/send_cmd.py|`hermes send --json` notices (A§8.6, D-008)
+cron_list_created_job|Created job:|hermes_cli/cron.py|`hermes cron create` output the plugin parses (A§7.1)|no
+desktop_half_copy|desktop-plugins|hermes_cli/desktop_plugin_halves.py|unified package Desktop half copy on the serving host (A§3)
+read_credential_pool|read_credential_pool|agent/credential_pool.py|pool read, read-only (A§4.3, D-001)
+auth_refresh_matching|try_refresh_matching|agent/credential_pool.py|`hermes auth refresh openai-codex <id>` (A§4.3, R-004, D-003)
+plugin_settings_save|save_plugin_settings|hermes_cli/plugins_settings.py|dashboard `POST /settings` writes plugin settings through Hermes' own writer
+plugin_config_dict_type|"dict": "json"|hermes_cli/plugins_settings.py|`config_schema` `dict` field type maps to the JSON wire type the Settings form renders
+plugin_dashboard_mount|_mount_plugin_api_routes|hermes_cli/web_server_dashboard.py|Hermes mounts the plugin's dashboard API routes under /api/plugins/reset-rescue/
+plugin_api_allowlist|plugin_api.json|hermes_cli/plugin_validate_private_imports.py|validator allow-list (not a runtime need); the data file cannot contain its own name, so the probe reads the validator that loads it|no
