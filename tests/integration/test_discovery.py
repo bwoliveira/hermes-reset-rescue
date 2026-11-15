@@ -143,7 +143,7 @@ class DiscoveryInTempHome(unittest.TestCase):
             with harness.HomeEnv(home):
                 manifests = harness.discover(home)
             manifest = next(m for m in manifests if m.name == "reset-rescue")
-            self.assertEqual(manifest.version, "0.1.0")
+            self.assertEqual(manifest.version, "0.2.0")
             self.assertEqual(
                 manifest.kind,
                 "standalone",

@@ -61,6 +61,24 @@ class PercentagesAreParsed(unittest.TestCase):
         self.assertEqual(summary.five_hour_pct, 11.0)
         self.assertEqual(summary.weekly_pct, 22.0)
 
+    def test_the_weekly_reset_time_is_carried(self):
+        payload = usage_payload(weekly=30.0, session=5.0)
+        payload["rate_limit"]["primary_window"]["reset_at"] = 1_900_000_000
+        payload["rate_limit"]["secondary_window"]["reset_at"] = 1_800_000_000
+        self.assertEqual(parse_usage(payload).weekly_resets_at, 1_900_000_000.0)
+
+    def test_an_iso_weekly_reset_time_is_read(self):
+        payload = usage_payload(weekly=30.0)
+        payload["rate_limit"]["primary_window"]["reset_at"] = "2030-03-17T17:46:40Z"
+        self.assertEqual(parse_usage(payload).weekly_resets_at, 1_900_000_000.0)
+
+    def test_a_missing_or_malformed_weekly_reset_time_is_none(self):
+        for value in (None, "", "soon", True, 0, -5, {"at": 1}):
+            payload = usage_payload(weekly=30.0)
+            payload["rate_limit"]["primary_window"]["reset_at"] = value
+            self.assertIsNone(parse_usage(payload).weekly_resets_at, value)
+        self.assertIsNone(parse_usage(usage_payload(session=5.0)).weekly_resets_at)
+
     def test_only_one_window_present(self):
         summary = parse_usage(usage_payload(weekly=99.0))
         self.assertEqual(summary.weekly_pct, 99.0)

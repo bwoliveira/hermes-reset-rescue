@@ -23,7 +23,7 @@ name: reset-rescue
 repo: https://github.com/bwoliveira/hermes-reset-rescue
 # PLACEHOLDER — replace with the full 40-hex commit of the reviewed public tree.
 sha: "0000000000000000000000000000000000000000"
-version: "0.1.0"
+version: "0.2.0"
 title: Reset Rescue
 description: >-
   Rescues expiring OpenAI Codex rate-limit reset credits across the openai-codex accounts in the active Hermes profile's credential pool, falling back to the active sign-in when the pool has no usable accounts. By default, Hermes cron schedules a primary attempt 10 minutes before expiry and a backup 4 minutes before, then reads the credit list back. Reminders and results use your existing Hermes channel. Optional quota-based early redemption is off by default; confirmed Redeem now spends a credit manually. By design it does not purchase credits or enable overage. The Desktop popup lists every account, with history, settings that save on change, English and pt-BR, and per-account overrides with two or more accounts. Account labels and domains are masked by default; tokens and raw credit IDs are not logged.

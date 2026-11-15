@@ -263,7 +263,12 @@ class SummaryShape(unittest.TestCase):
         )
         self.assertEqual(
             dto.to_dict(),
-            {"plan_type": "Pro 200", "five_hour_remaining_pct": None, "weekly_remaining_pct": 40},
+            {
+                "plan_type": "Pro 200",
+                "five_hour_remaining_pct": None,
+                "weekly_remaining_pct": 40,
+                "weekly_resets_at": None,
+            },
         )
 
     def test_a_missing_plan_is_none_not_an_empty_string(self):
@@ -286,7 +291,7 @@ class BuildServiceFactory(unittest.TestCase):
 
     def test_it_answers_status_without_the_host_lane(self):
         status = build_service().status()
-        self.assertEqual(status.version, "0.1.0")
+        self.assertEqual(status.version, "0.2.0")
 
     def test_resolve_language_is_shared_by_the_route_and_the_notices(self):
         self.assertEqual(resolve_language(parse_settings({"language": "pt-BR"}), "en"), "pt-BR")

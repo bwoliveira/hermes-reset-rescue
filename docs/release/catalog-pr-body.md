@@ -10,7 +10,7 @@ The Desktop status-bar popup lists every pool account, including accounts withou
 
 - Repository: https://github.com/bwoliveira/hermes-reset-rescue
 - Commit to review: `<SHA>` (replace at publication; do not link a branch)
-- Maintainer: `bwoliveira`; version `0.1.0`; category `automation`; tier `community`; platforms Linux and macOS
+- Maintainer: `bwoliveira`; version `0.2.0`; category `automation`; tier `community`; platforms Linux and macOS
 - Hermes floor: `requires_hermes: ">=0.22.6"` in both `plugin.yaml` and the entry. The floor is derived from source history. Runtime testing so far used Hermes 0.23.0. Installation on 0.22.6 has not been run.
 - Registered tools, hooks, middleware and required environment variables: none declared.
 

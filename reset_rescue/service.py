@@ -530,6 +530,9 @@ class Service:
             plan_type=plan,
             five_hour_remaining_pct=_rounded(windows.get("session")),
             weekly_remaining_pct=_rounded(windows.get("weekly")),
+            weekly_resets_at=(
+                iso_z(getattr(summary, "weekly_resets_at", None)) if "weekly" in windows else None
+            ),
         )
 
     def _account_ref(self, source: Any, account_key: str, label: str) -> Any:

@@ -238,12 +238,13 @@ class QuotaSummaryIsTheOnlyQuotaField(unittest.TestCase):
             LIMIT_SUMMARY_FIELDS,
             {
                 "AccountDTO": ("quota",),
-                "QuotaDTO": ("five_hour_remaining_pct", "weekly_remaining_pct"),
+                "QuotaDTO": ("five_hour_remaining_pct", "weekly_remaining_pct", "weekly_resets_at"),
                 "SettingsViewDTO": ("early_redeem_remaining_pct",),
             },
         )
         self.assertEqual(
-            QuotaDTO.FIELDS, ("plan_type", "five_hour_remaining_pct", "weekly_remaining_pct")
+            QuotaDTO.FIELDS,
+            ("plan_type", "five_hour_remaining_pct", "weekly_remaining_pct", "weekly_resets_at"),
         )
 
     def test_there_is_no_used_percent_field(self):
@@ -280,7 +281,8 @@ class QuotaSummaryIsTheOnlyQuotaField(unittest.TestCase):
     def test_the_account_carries_the_summary_as_one_nested_object(self):
         self.assertIn("quota", AccountDTO.FIELDS)
         self.assertEqual(
-            QuotaDTO.FIELDS, ("plan_type", "five_hour_remaining_pct", "weekly_remaining_pct")
+            QuotaDTO.FIELDS,
+            ("plan_type", "five_hour_remaining_pct", "weekly_remaining_pct", "weekly_resets_at"),
         )
 
     def test_there_is_no_usage_dto_at_all(self):
@@ -363,7 +365,7 @@ class NestedSerialization(unittest.TestCase):
 
     def test_list_of_dtos_serializes(self):
         status = StatusDTO(
-            version="0.1.0",
+            version="0.2.0",
             schema_version=1,
             source_kind="pool",
             coverage_note_key="coverage.pool",
@@ -455,7 +457,7 @@ class EnumSets(unittest.TestCase):
 class FullStatusShape(unittest.TestCase):
     def test_a_complete_status_dto_serializes_to_the_documented_keys(self):
         status = StatusDTO(
-            version="0.1.0",
+            version="0.2.0",
             schema_version=1,
             source_kind="pool",
             coverage_note_key="coverage.pool",
@@ -539,7 +541,12 @@ class FullStatusShape(unittest.TestCase):
         ).to_dict()
         self.assertEqual(
             payload,
-            {"plan_type": "Pro", "five_hour_remaining_pct": None, "weekly_remaining_pct": 41},
+            {
+                "plan_type": "Pro",
+                "five_hour_remaining_pct": None,
+                "weekly_remaining_pct": 41,
+                "weekly_resets_at": None,
+            },
         )
         self.assertNotIn("used", json.dumps(payload))
 

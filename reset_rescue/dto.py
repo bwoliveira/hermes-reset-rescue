@@ -99,7 +99,9 @@ _FORBIDDEN_NAME_PARTS = (
 #: ``AccountDTO.quota`` is the one place the nested summary hangs off.
 LIMIT_SUMMARY_FIELDS: Mapping[str, Tuple[str, ...]] = {
     "AccountDTO": ("quota",),
-    "QuotaDTO": ("five_hour_remaining_pct", "weekly_remaining_pct"),
+    # ``weekly_resets_at`` is when the weekly window starts over (an ISO time,
+    # not a reading); it shares the ``weekly`` stem, so it is listed here.
+    "QuotaDTO": ("five_hour_remaining_pct", "weekly_remaining_pct", "weekly_resets_at"),
     # The user's own configured early-redemption threshold, shown in the
     # footer. It is a setting, not a reading, and it names no account.
     "SettingsViewDTO": ("early_redeem_remaining_pct",),
@@ -372,11 +374,13 @@ class QuotaDTO(_Record):
     :data:`LIMIT_SUMMARY_FIELDS`), and it carries no used figure at all.
     """
 
-    FIELDS = ("plan_type", "five_hour_remaining_pct", "weekly_remaining_pct")
+    FIELDS = ("plan_type", "five_hour_remaining_pct", "weekly_remaining_pct", "weekly_resets_at")
 
     plan_type: Optional[str]
     five_hour_remaining_pct: Optional[int]
     weekly_remaining_pct: Optional[int]
+    #: ISO UTC time the weekly window starts over, or ``None`` when unknown.
+    weekly_resets_at: Optional[str]
 
 
 class AccountDTO(_Record):

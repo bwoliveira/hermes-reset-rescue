@@ -87,7 +87,7 @@ class StatusShape(unittest.TestCase):
         status = service.status()
         self.assertIsInstance(status, StatusDTO)
         payload = status.to_dict()
-        self.assertEqual(payload["version"], "0.1.0")
+        self.assertEqual(payload["version"], "0.2.0")
         self.assertEqual(payload["source_kind"], "pool")
         self.assertIn("attention", payload)
 
@@ -252,6 +252,28 @@ class Limits(unittest.TestCase):
         seed_account(store)
         seed_credit(store)
         self.assertEqual(service.status().accounts[0].quota.plan_type, "Pro 200")
+
+    def test_the_weekly_reset_time_is_carried_as_iso(self):
+        source = FakeSource(
+            [
+                AccountRef(
+                    account_key=KEY_A, label="b***@e***.com", source_kind="pool", entry_id="e1"
+                )
+            ]
+        )
+        payload = usage_payload(weekly=10.0)
+        payload["rate_limit"]["primary_window"]["reset_at"] = 1_900_000_000
+        source.on("GET", "/usage", Response(200, payload))
+        service, _, store, _, _, _ = service_with(source=source)
+        seed_account(store)
+        seed_credit(store)
+        quota = service.status().accounts[0].quota
+        self.assertEqual(quota.weekly_resets_at, "2030-03-17T17:46:40Z")
+        self.assertEqual(quota.to_dict()["weekly_resets_at"], "2030-03-17T17:46:40Z")
+
+    def test_no_weekly_reset_time_without_one_from_the_backend(self):
+        service, _, _, _, _, _ = seeded()
+        self.assertIsNone(service.status().accounts[0].quota.weekly_resets_at)
 
     def test_no_usage_read_for_an_account_that_is_not_listed(self):
         source = FakeSource([])
@@ -680,7 +702,7 @@ class BuildService(unittest.TestCase):
         self.assertTrue(callable(getattr(service, "status", None)))
         status = service.status()
         self.assertIsInstance(status, StatusDTO)
-        self.assertEqual(status.version, "0.1.0")
+        self.assertEqual(status.version, "0.2.0")
 
     def test_the_dashboard_route_default_factory_resolves_it(self):
         import importlib.util

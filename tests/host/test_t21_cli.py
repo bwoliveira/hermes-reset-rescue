@@ -43,7 +43,7 @@ class _Service:
     def __init__(self) -> None:
         self.calls: list[tuple[str, dict]] = []
         self.status_dto = StatusDTO(
-            version="0.1.0",
+            version="0.2.0",
             schema_version=1,
             source_kind="pool",
             coverage_note_key=None,
@@ -193,14 +193,14 @@ class DispatchTests(unittest.TestCase):
     def test_status_renders_a_human_view(self):
         code, out, _ = _run(["status"])
         self.assertEqual(code, cli.EXIT_OK)
-        self.assertIn("Reset Rescue 0.1.0", out)
+        self.assertIn("Reset Rescue 0.2.0", out)
         self.assertIn("Schedule: armed", out)
 
     def test_status_json_is_the_allow_list_serializer(self):
         code, out, _ = _run(["status", "--json"])
         self.assertEqual(code, cli.EXIT_OK)
         payload = json.loads(out)
-        self.assertEqual(payload["version"], "0.1.0")
+        self.assertEqual(payload["version"], "0.2.0")
         self.assertEqual(payload["schedule"]["armed"], True)
         self.assertNotIn("token", json.dumps(payload).lower())
 

@@ -334,11 +334,12 @@ class PopupContract(Base):
         return Service(deps)
 
     # -- 1. D-017 quota ----------------------------------------------------
-    def test_account_quota_carries_exactly_the_three_names_the_ui_reads(self):
+    def test_account_quota_carries_exactly_the_four_names_the_ui_reads(self):
         body = self._status(self._service())
         quota = body["accounts"][0]["quota"]
         self.assertEqual(
-            sorted(quota), ["five_hour_remaining_pct", "plan_type", "weekly_remaining_pct"]
+            sorted(quota),
+            ["five_hour_remaining_pct", "plan_type", "weekly_remaining_pct", "weekly_resets_at"],
         )
         self.assertEqual(quota["five_hour_remaining_pct"], 88)
         self.assertEqual(quota["weekly_remaining_pct"], 40)

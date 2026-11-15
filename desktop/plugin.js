@@ -232,7 +232,8 @@ const EN = {
   },
   quota: {
     fiveHour: n => `5 h: ${n}% left`,
-    weekly: n => `Weekly: ${n}% left`
+    weekly: n => `Weekly: ${n}% left`,
+    resets: when => `resets ${when}`
   },
   credit: {
     expires: when => `Expires ${when}`,
@@ -458,7 +459,8 @@ const PT_BR = {
   },
   quota: {
     fiveHour: n => `5 h: ${n}% livre`,
-    weekly: n => `Semana: ${n}% livre`
+    weekly: n => `Semana: ${n}% livre`,
+    resets: when => `renova ${when}`
   },
   credit: {
     expires: when => `Vence ${when}`,
@@ -716,6 +718,14 @@ export function formatTime(iso, lang) {
   return new Intl.DateTimeFormat(lang, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(d)
 }
 
+/** "Fri 14:30" in the Desktop's own time zone: the weekly window starts over
+ *  within 7 days, so the weekday names the day without a date. */
+export function formatWeekdayTime(iso, lang) {
+  const d = toDate(iso)
+  if (!d) return null
+  return new Intl.DateTimeFormat(lang, { weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(d)
+}
+
 /** "Nov 9" in the Desktop's own time zone. */
 export function formatDay(iso, lang) {
   const d = toDate(iso)
@@ -917,10 +927,11 @@ function percent(value) {
   return typeof value === 'number' && Number.isFinite(value) ? Math.round(Math.min(100, Math.max(0, value))) : null
 }
 
-/** "Plus · 5 h 82% left · weekly 40% left" from AccountDTO.quota, or null when
- *  the backend sent no reading (D-017). The plan is shown as the backend
- *  reports it, first letter raised. */
-export function quotaLine(account, t) {
+/** "Plus · 5 h 82% left · Weekly: 40% left · resets Fri 14:30" from
+ *  AccountDTO.quota, or null when the backend sent no reading (D-017). The plan
+ *  is shown as the backend reports it, first letter raised. The weekly reset
+ *  time follows the weekly figure only when it is still ahead. */
+export function quotaLine(account, t, lang, now = Date.now()) {
   const quota = account?.quota
   if (!quota || typeof quota !== 'object') return null
   const parts = []
@@ -929,7 +940,12 @@ export function quotaLine(account, t) {
   const five = percent(quota.five_hour_remaining_pct)
   if (five !== null) parts.push(t('quota.fiveHour', five))
   const weekly = percent(quota.weekly_remaining_pct)
-  if (weekly !== null) parts.push(t('quota.weekly', weekly))
+  if (weekly !== null) {
+    parts.push(t('quota.weekly', weekly))
+    const resetsAt = toDate(quota.weekly_resets_at)
+    const when = resetsAt && resetsAt.getTime() > now ? formatWeekdayTime(quota.weekly_resets_at, lang) : null
+    if (when) parts.push(t('quota.resets', when))
+  }
   return parts.length ? parts.join(t('sep')) : null
 }
 
@@ -1205,7 +1221,7 @@ function CreditRow({ credit, booked, now, lang, t, onRedeem, measure = false }) 
 function AccountSection({ group, now, lang, t, onRedeem, onTag, measure = false }) {
   const { account, credits } = group
   const booked = rescueBooked(account)
-  const quota = quotaLine(account, t)
+  const quota = quotaLine(account, t, lang, now)
   // D-030: an account with its own settings carries a small muted tag that
   // opens Settings > Per account on its row; a paused account is greyed.
   const tag = !onTag ? null : accountTag(account)

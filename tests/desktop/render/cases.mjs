@@ -1,10 +1,12 @@
 // Fixture data for the real-browser layout test (popup-layout.test.mjs).
 // Labels are neutral masked placeholders; no real address appears here.
-import { account, credit, overridden, status } from '../fixtures.mjs'
+import { NOW, account, credit, iso, overridden, status } from '../fixtures.mjs'
 
 export const LABELS = ['a***@e***.com', 'b***@e***.com', 'c***@e***.com', 'd***@e***.com', 'e***@e***.com', 'f***@e***.com']
 
-const QUOTA = { plan_type: 'plus', five_hour_remaining_pct: 82.4, weekly_remaining_pct: 40 }
+// The widest quota line (D-035): both windows at three digits plus the weekly
+// reset time, so the layout cases measure the longest text the line can carry.
+const QUOTA = { plan_type: 'team', five_hour_remaining_pct: 100, weekly_remaining_pct: 100, weekly_resets_at: iso(NOW + (5 * 24 + 8.5) * 3600_000) }
 
 /** Accounts whose resets are all scheduled, so each reset shows its two lines
  *  (the clock/remaining line and the rescue line, D-027). */

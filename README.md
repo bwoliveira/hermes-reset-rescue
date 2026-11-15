@@ -46,7 +46,7 @@ In Hermes Desktop, enable the plugin's Desktop half in Plugins to show the statu
 
 ## Use
 
-Click the Desktop status-bar chip to open the popup. It lists every pool account, including those with no banked resets, with expiries, rescue times and a compact quota line (plan, 5 h and weekly remaining where available). Five full accounts fit; additional content scrolls. Sort by soonest expiry or account. Times use the Desktop's time zone; notices use Hermes' configured time zone or the host's.
+Click the Desktop status-bar chip to open the popup. It lists every pool account, including those with no banked resets, with expiries, rescue times and a compact quota line (plan, 5 h and weekly remaining where available, and when the weekly window resets). Five full accounts fit; additional content scrolls. Sort by soonest expiry or account. Times use the Desktop's time zone; notices use Hermes' configured time zone or the host's.
 
 - **Scan now** checks for changes. History shows the local activity log.
 - **Redeem now** spends the selected credit only after confirmation; redemption is final.

@@ -353,6 +353,29 @@ test('quota: only the windows the backend reports; plan as reported; clamped', {
   absent(p.querySelector('[data-rr-account="acct_c"] [data-rr-quota]'))
 })
 
+test('quota: the weekly window says when it starts over, in local time', { skip }, async () => {
+  const resets = iso(NOW + (5 * 24 + 8.5) * 3600_000) // Fri Nov 13, 17:30 in São Paulo
+  const accounts = [
+    account('acct_a', 'a***@e***.com', [credit('c1', { expiresIn: 40 })], { quota: { plan_type: 'team', five_hour_remaining_pct: 100, weekly_remaining_pct: 0, weekly_resets_at: resets } }),
+    account('acct_b', 'b***@e***.com', [credit('c2', { expiresIn: 50 })], { quota: { plan_type: 'pro', five_hour_remaining_pct: null, weekly_remaining_pct: 87, weekly_resets_at: iso(NOW - 60_000) } }),
+    account('acct_c', 'c***@e***.com', [credit('c3', { expiresIn: 60 })], { quota: { plan_type: null, five_hour_remaining_pct: 50, weekly_remaining_pct: null, weekly_resets_at: resets } })
+  ]
+  await mount(status({ accounts }))
+  const p = await openPopover()
+  assert.equal(p.querySelector('[data-rr-account="acct_a"] [data-rr-quota]').textContent, 'Team · 5 h: 100% left · Weekly: 0% left · resets Fri 17:30')
+  assert.equal(p.querySelector('[data-rr-account="acct_b"] [data-rr-quota]').textContent, 'Pro · Weekly: 87% left', 'a reset time already past is dropped')
+  assert.equal(p.querySelector('[data-rr-account="acct_c"] [data-rr-quota]').textContent, '5 h: 50% left', 'no reset time without a weekly figure')
+})
+
+test('quota: the weekly reset reads in pt-BR', { skip }, async () => {
+  const quota = { plan_type: 'team', five_hour_remaining_pct: null, weekly_remaining_pct: 31, weekly_resets_at: iso(NOW + (5 * 24 + 8.5) * 3600_000) }
+  const pt = status({ accounts: [account('acct_a', 'a***@e***.com', [credit('c1', { expiresIn: 40 })], { quota })] })
+  pt.language = 'pt-BR'
+  await mount(pt, { locale: 'en' })
+  const p = await openPopover()
+  assert.equal(p.querySelector('[data-rr-account="acct_a"] [data-rr-quota]').textContent, 'Team · Semana: 31% livre · renova sex., 17:30')
+})
+
 test('D-021: no Open Codex usage link in the popup', { skip }, async () => {
   await mount(mixed())
   const p = await openPopover()

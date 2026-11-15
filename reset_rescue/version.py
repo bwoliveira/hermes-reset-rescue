@@ -3,7 +3,7 @@
 Kept in one module so the manifest, the DTOs and the tests never disagree.
 """
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 
 #: Local SQLite schema version (owned by ``store.py``, mirrored here so the
 #: status DTO can report it without importing the store).

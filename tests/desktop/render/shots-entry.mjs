@@ -101,7 +101,7 @@ const GLOBAL_PCT = setting('early_redeem_remaining_pct')
 const HORIZON_H = 48
 const MIN = 60_000
 const BACKUP_LEAD = 4 // settings.MAX_BACKUP_LEAD_MINUTES; not a Settings field
-const QUOTA = { plan_type: 'plus', five_hour_remaining_pct: 82.4, weekly_remaining_pct: 40 }
+const QUOTA = { plan_type: 'plus', five_hour_remaining_pct: 82.4, weekly_remaining_pct: 40, weekly_resets_at: iso(NOW + (5 * 24 + 8.5) * 3600_000) }
 /** A banked reset `h` hours from NOW, armed the way the planner arms it:
  *  primary at expiry - lead_minutes, backup at expiry - backup_lead_minutes. */
 function banked(key, h) {
@@ -125,14 +125,14 @@ export const DEMO = status({
     account('acct_a', 'a***@e***.com', [banked('cr_a1', 9.6), banked('cr_a2', 33)], { quota: QUOTA, ...own() }),
     // Two resets.
     account('acct_b', 'b***@e***.com', [banked('cr_b1', 22), banked('cr_b2', 46)], {
-      quota: { plan_type: 'pro', five_hour_remaining_pct: 64, weekly_remaining_pct: 71 },
+      quota: { plan_type: 'pro', five_hour_remaining_pct: 64, weekly_remaining_pct: 71, weekly_resets_at: iso(NOW + (2 * 24 + 3) * 3600_000) },
       ...own()
     }),
     // One reset, its own override: early redeem on at 20 % (40 % weekly left:
     // not yet triggered, so the reset still waits for its rescue time).
     account('acct_c', 'c***@e***.com', [banked('cr_c1', 40)], { quota: QUOTA, ...own({ early_redeem_enabled: true, early_redeem_remaining_pct: 20 }) }),
     // No resets.
-    account('acct_d', 'd***@e***.com', [], { quota: { plan_type: 'plus', five_hour_remaining_pct: 100, weekly_remaining_pct: 93 }, ...own() }),
+    account('acct_d', 'd***@e***.com', [], { quota: { plan_type: 'plus', five_hour_remaining_pct: 100, weekly_remaining_pct: 93, weekly_resets_at: iso(NOW + (6 * 24 + 11) * 3600_000) }, ...own() }),
     // Paused: not checked, nothing scheduled.
     account('acct_e', 'e***@e***.com', [], own({ monitored: false }))
   ]

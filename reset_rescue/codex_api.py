@@ -23,6 +23,7 @@ after 2 s. A 401 is the source's business (§4.3): it is never retried here.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, Mapping, Optional
 
 from .accounts import (
@@ -151,6 +152,9 @@ class UsageSummary:
     weekly_pct: Optional[float] = None
     five_hour_pct: Optional[float] = None
     plan_type: Optional[str] = None
+    #: When the weekly window starts over, epoch seconds (the backend's
+    #: ``reset_at``), or ``None`` when it did not say. Display only.
+    weekly_resets_at: Optional[float] = None
 
     @property
     def known(self) -> bool:
@@ -424,6 +428,7 @@ def parse_usage(payload: Any) -> UsageSummary:
     if not isinstance(rate, Mapping):
         rate = {}
     weekly: Optional[float] = None
+    weekly_resets_at: Optional[float] = None
     five_hour: Optional[float] = None
     for name in ("primary_window", "secondary_window"):
         window = rate.get(name)
@@ -437,11 +442,38 @@ def parse_usage(payload: Any) -> UsageSummary:
             continue
         if seconds == 604800:
             weekly = float(used)
+            weekly_resets_at = _reset_epoch(window.get("reset_at"))
         elif seconds == 18000:
             five_hour = float(used)
     return UsageSummary(
-        weekly_pct=weekly, five_hour_pct=five_hour, plan_type=plan_type_from(payload)
+        weekly_pct=weekly,
+        five_hour_pct=five_hour,
+        plan_type=plan_type_from(payload),
+        weekly_resets_at=weekly_resets_at,
     )
+
+
+def _reset_epoch(value: Any) -> Optional[float]:
+    """A window's ``reset_at`` as epoch seconds, or ``None``.
+
+    The backend sends epoch seconds; an ISO string is accepted too, the same
+    two shapes Hermes' ``_parse_dt`` (``agent/account_usage.py``) reads.
+    """
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value) if value > 0 else None
+    if isinstance(value, str) and value.strip():
+        text = value.strip()
+        text = text[:-1] + "+00:00" if text.endswith("Z") else text
+        try:
+            parsed = datetime.fromisoformat(text)
+        except ValueError:
+            return None
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.timestamp()
+    return None
 
 
 def plan_type_from(payload: Any) -> Optional[str]:

@@ -1,6 +1,6 @@
 manifest_version: 2
 name: reset-rescue
-version: "0.1.0"
+version: "0.2.0"
 description: >-
   Rescues expiring OpenAI Codex rate-limit reset credits: scans every Codex
   account in your Hermes credential pool, redeems each banked credit minutes
